@@ -9,7 +9,7 @@ function onIncompletePaymentFound(payment) {
   console.log('Incomplete payment found:', payment);
 }
 
-document.getElementById("login").addEventListener("click", async () => {
+async function login() {
 
   try {
 
@@ -21,14 +21,25 @@ document.getElementById("login").addEventListener("click", async () => {
     console.log(auth);
 
     document.getElementById("userinfo").innerHTML = `
-      <h2>${auth.user.username}</h2>
-      <p>${auth.user.uid}</p>
+
+      <h2>Welcome ${auth.user.username}</h2>
+
+      <p>User ID:</p>
+
+      <small>${auth.user.uid}</small>
+
     `;
 
   } catch (error) {
 
     console.error(error);
 
+    alert("Login Failed");
+
   }
 
-});
+}
+
+document
+  .getElementById("login")
+  .addEventListener("click", login);
