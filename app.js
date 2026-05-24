@@ -1,45 +1,55 @@
-Pi.init({
-  version: "2.0",
-  sandbox: true
-});
+async function pay() {
 
-const scopes = ['username', 'payments'];
+  const paymentData = {
+    amount: 1,
+    memo: "CashCam Payment",
+    metadata: { type: "payment" }
+  };
 
-function onIncompletePaymentFound(payment) {
-  console.log('Incomplete payment found:', payment);
+  const callbacks = {
+
+    onReadyForServerApproval: async function(paymentId) {
+
+      const res = await fetch('/api/approve-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ paymentId })
+      });
+
+      console.log(await res.json());
+    },
+
+    onReadyForServerCompletion: async function(paymentId, txid) {
+
+      const res = await fetch('/api/complete-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentId,
+          txid
+        })
+      });
+
+      console.log(await res.json());
+    },
+
+    onCancel: function(paymentId) {
+      console.log("Cancelled", paymentId);
+    },
+
+    onError: function(error, payment) {
+      console.error(error);
+    }
+
+  };
+
+  await Pi.createPayment(
+    paymentData,
+    callbacks
+  );
+
 }
-
-async function login() {
-
-  try {
-
-    const auth = await Pi.authenticate(
-      scopes,
-      onIncompletePaymentFound
-    );
-
-    console.log(auth);
-
-    document.getElementById("userinfo").innerHTML = `
-
-      <h2>Welcome ${auth.user.username}</h2>
-
-      <p>User ID:</p>
-
-      <small>${auth.user.uid}</small>
-
-    `;
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("Login Failed");
-
-  }
-
-}
-
-document
-  .getElementById("login")
-  .addEventListener("click", login);
