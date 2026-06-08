@@ -1,6 +1,0 @@
-{
-  "routes": [
-    { "src": "/api/approve", "dest": "api/approve.js" },
-    { "src": "/(.*)", "dest": "/$1" }
-  ]
-}
