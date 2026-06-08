@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CashCam | Pi Network Shorts</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- شاشة البداية الفاخرة -->
+        <div id="splash">
+            <div class="splash-content">
+                <div class="logo-gold">💰 CashCam</div>
+                <div class="sub">Pi Network Premium Shorts</div>
+                <div class="spinner"></div>
+            </div>
+        </div>
 
+        <!-- المحتوى الرئيسي -->
+        <div id="main-content" style="display: none;">
+            <!-- حاوية الفيديوهات -->
+            <div id="shorts-container"></div>
+
+            <!-- شريط التنقل السفلي الفاخر -->
+            <nav id="bottom-nav">
+                <button class="nav-btn active" data-page="home">
+                    <span class="material-icons">home</span>
+                    <span>الرئيسية</span>
+                </button>
+                <button class="nav-btn" data-page="friends">
+                    <span class="material-icons">people</span>
+                    <span>الأصدقاء</span>
+                </button>
+                <button class="nav-btn" data-page="upload">
+                    <span class="material-icons add-icon">add_box</span>
+                    <span>نشر</span>
+                </button>
+                <button class="nav-btn" data-page="inbox">
+                    <span class="material-icons">inbox</span>
+                    <span>الوارد</span>
+                </button>
+                <button class="nav-btn" data-page="profile">
+                    <span class="material-icons">account_circle</span>
+                    <span>ملفي</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- مودال رفع فيديو فاخر -->
+    <div id="upload-modal" class="modal glass-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>✨ رفع فيديو جديد ✨</h3>
+            <div class="upload-area" id="upload-area">
+                <span class="material-icons">cloud_upload</span>
+                <p>اسحب الفيديو أو اضغط للاختيار</p>
+                <input type="file" id="video-upload" accept="video/*" hidden>
+            </div>
+            <input type="text" id="video-caption" placeholder="اكتب وصفاً جذاباً...">
+            <button id="publish-video" class="gold-btn">نشر الفيديو +20 نقطة</button>
+        </div>
+    </div>
+
+    <!-- نافذة تعليقات فاخرة -->
+    <div id="comments-modal" class="modal glass-modal">
+        <div class="modal-content">
+            <span class="close-comments">&times;</span>
+            <h3>💬 التعليقات</h3>
+            <div id="comments-list"></div>
+            <div class="add-comment">
+                <input type="text" id="new-comment" placeholder="أضف تعليقاً...">
+                <button id="send-comment">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
