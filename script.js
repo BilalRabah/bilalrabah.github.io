@@ -1,4 +1,4 @@
-const API_URL = 'https://cashcam-api.onrender.com/api'; // غير هذا لاحقاً
+const API_URL = 'https://cashcam-api.onrender.com/api';
 let token = localStorage.getItem('token');
 let currentUser = null;
 
