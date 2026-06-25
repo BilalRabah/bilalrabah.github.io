@@ -307,3 +307,35 @@ window.onload = async () => {
     
     addExtraButtons();
 };
+// ========== Pi Network Payment Integration ==========
+// تأكد من تهيئة Pi SDK عند تحميل الصفحة
+// ضع هذا السطر داخل window.onload أو في بداية الملف
+// Pi.init({ version: "2.0" });
+
+function initiateTestPayment() {
+    Pi.createPayment({
+        amount: 0.01, // مبلغ صغير للاختبار (Test-Pi)
+        memo: "تأكيد تفعيل الدفع لتطبيق CashCam",
+        metadata: { test: true }
+    }, {
+        onReadyForServerApproval: function(paymentId) {
+            console.log("Payment ready for approval:", paymentId);
+            // يمكنك إرسال طلب إلى الخادم هنا
+            // fetch(`${API_URL}/approve-payment`, { method: 'POST', body: JSON.stringify({ paymentId }) })
+        },
+        onReadyForServerCompletion: function(paymentId, txid) {
+            console.log("Payment completed:", paymentId, txid);
+            // يمكنك إرسال طلب إلى الخادم هنا
+            // fetch(`${API_URL}/complete-payment`, { method: 'POST', body: JSON.stringify({ paymentId, txid }) })
+        },
+        onCancel: function(paymentId) {
+            console.log("Payment cancelled:", paymentId);
+        },
+        onError: function(error, payment) {
+            console.error("Payment error:", error, payment);
+        }
+    });
+}
+
+// إضافة زر لاختبار الدفع (يمكنك استدعاؤه من أي مكان)
+// document.getElementById('test-payment-btn').onclick = initiateTestPayment;
