@@ -1,7 +1,9 @@
-const API_URL = 'https://cashcam-api.onrender.com/api';
+// ========== الإعدادات العامة ==========
+const API_URL = 'https://cashcam-api.onrender.com/api'; // رابط الخادم الحقيقي
 let token = localStorage.getItem('token');
 let currentUser = null;
 
+// ========== دوال مساعدة ==========
 function showToast(msg, isError = false) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -12,6 +14,7 @@ function showToast(msg, isError = false) {
     setTimeout(() => toast.remove(), 2500);
 }
 
+// ========== المصادقة عبر Pi (محاكاة مؤقتة) ==========
 async function loginWithPi() {
     const piUserId = 'user_' + Math.floor(Math.random() * 10000);
     const username = 'Pioneer_' + piUserId.slice(-4);
@@ -32,6 +35,7 @@ async function loginWithPi() {
     }
 }
 
+// ========== تحميل الفيديوهات ==========
 async function loadFeed() {
     try {
         const res = await fetch(`${API_URL}/videos/feed`, {
@@ -44,16 +48,17 @@ async function loadFeed() {
     }
 }
 
+// ========== عرض الفيديوهات ==========
 function renderShorts(videos) {
     const container = document.getElementById('shorts-container');
     if (!container) return;
     container.innerHTML = '';
     videos.forEach(video => {
         const user = video.userId || { username: 'مستخدم', level: 'Bronze Pioneer' };
-        let levelTrans = t('level_bronze');
-        if (user.level.includes('Silver')) levelTrans = t('level_silver');
-        else if (user.level.includes('Gold')) levelTrans = t('level_gold');
-        else if (user.level.includes('Diamond')) levelTrans = t('level_diamond');
+        let levelTrans = 'برونز';
+        if (user.level.includes('Silver')) levelTrans = 'فضي';
+        else if (user.level.includes('Gold')) levelTrans = 'ذهبي';
+        else if (user.level.includes('Diamond')) levelTrans = 'ألماس';
         
         const card = document.createElement('div');
         card.className = 'video-card';
@@ -75,7 +80,7 @@ function renderShorts(videos) {
                     </button>
                     <button class="action-btn comment-btn" data-id="${video._id}">
                         <span class="material-icons">chat_bubble_outline</span>
-                        <span>${t('comments')}</span>
+                        <span>تعليق</span>
                     </button>
                 </div>
             </div>
@@ -84,9 +89,9 @@ function renderShorts(videos) {
     });
     attachVideoEvents();
     attachInteractionEvents();
-    if (typeof applyTranslationsToPage === 'function') applyTranslationsToPage();
 }
 
+// ========== أحداث الفيديو ==========
 function attachVideoEvents() {
     document.querySelectorAll('.video-card video').forEach(video => {
         const card = video.closest('.video-card');
@@ -128,7 +133,7 @@ function attachInteractionEvents() {
                 btn.querySelector('span:last-child').innerText = data.likes;
                 btn.querySelector('.material-icons').innerText = 'favorite';
                 btn.disabled = true;
-                showToast(t('toast_like'));
+                showToast('تم الإعجاب +1 نقطة');
                 updatePointsInUI(data.points);
             } catch (err) {}
         };
@@ -142,6 +147,7 @@ function attachInteractionEvents() {
     });
 }
 
+// ========== التعليقات ==========
 async function openCommentsModal(videoId) {
     try {
         const res = await fetch(`${API_URL}/videos/feed`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -162,20 +168,22 @@ async function openCommentsModal(videoId) {
             const input = document.getElementById('new-comment');
             const text = input.value.trim();
             if (!text) return;
-            showToast(t('toast_comment'));
+            // هنا يمكن إضافة API لإرسال التعليق
+            showToast('تم إضافة التعليق +3 نقاط');
             input.value = '';
         };
         document.querySelector('.close-comments').onclick = () => modal.style.display = 'none';
     } catch (err) {}
 }
 
+// ========== رفع فيديو ==========
 function openUploadModal() { document.getElementById('upload-modal').style.display = 'flex'; }
 function closeUploadModal() { document.getElementById('upload-modal').style.display = 'none'; }
 
 async function publishVideo() {
     const file = document.getElementById('video-upload').files[0];
     const caption = document.getElementById('video-caption').value;
-    if (!file) { showToast(t('drag_drop'), true); return; }
+    if (!file) { showToast('اختر فيديو أولاً', true); return; }
     const formData = new FormData();
     formData.append('video', file);
     formData.append('caption', caption);
@@ -186,12 +194,13 @@ async function publishVideo() {
             body: formData
         });
         const data = await res.json();
-        showToast(t('toast_upload'));
+        showToast('تم النشر! +20 نقطة');
         closeUploadModal();
         loadFeed();
     } catch (err) { showToast('فشل الرفع', true); }
 }
 
+// ========== الإعلانات ==========
 async function showAd() {
     return new Promise((resolve) => {
         const modal = document.createElement('div');
@@ -199,10 +208,10 @@ async function showAd() {
         modal.innerHTML = `
             <div style="background:linear-gradient(135deg,#ffd966,#b8860b); padding:20px; border-radius:40px; text-align:center;">
                 <span class="material-icons" style="font-size:48px;">play_circle_filled</span>
-                <h3>${t('ad_title')}</h3>
-                <p>${t('ad_watch')}</p>
+                <h3>إعلان قصير</h3>
+                <p>شاهد الإعلان 5 ثوانٍ للحصول على نقاط</p>
                 <div id="adTimer" style="font-size:32px;">5</div>
-                <button id="skipAd" style="background:gold; border:none; padding:8px 20px; border-radius:30px;">${t('ad_skip')}</button>
+                <button id="skipAd" style="background:gold; border:none; padding:8px 20px; border-radius:30px;">تخطي</button>
             </div>
         `;
         document.body.appendChild(modal);
@@ -214,6 +223,7 @@ async function showAd() {
             if (countdown <= 0) {
                 clearInterval(interval);
                 modal.remove();
+                showToast('شكراً لمشاهدة الإعلان +5 نقاط');
                 resolve(true);
             }
         }, 1000);
@@ -225,6 +235,7 @@ async function showAd() {
     });
 }
 
+// ========== تحويل النقاط ==========
 async function redeemPoints() {
     try {
         const res = await fetch(`${API_URL}/redeem`, {
@@ -233,10 +244,9 @@ async function redeemPoints() {
         });
         const data = await res.json();
         if (data.error) {
-            const errKey = data.error.includes('500') ? 'toast_redeem_fail_points' : 'toast_redeem_fail_videos';
-            showToast(t(errKey), true);
+            showToast(data.error, true);
         } else {
-            showToast(t('toast_redeem_success'));
+            showToast(`تم تحويل ${data.piAmount} Pi بنجاح`);
             updatePointsInUI(0);
         }
     } catch (err) { showToast('فشل التحويل', true); }
@@ -244,9 +254,10 @@ async function redeemPoints() {
 
 function updatePointsInUI(points) {
     const profileBtn = document.querySelector('[data-page="profile"]');
-    if (profileBtn) profileBtn.querySelector('span:last-child').innerHTML = `${points} ${t('points')}`;
+    if (profileBtn) profileBtn.querySelector('span:last-child').innerHTML = `${points} نقطة`;
 }
 
+// ========== التنقل بين الصفحات ==========
 function setupNavigation() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -256,47 +267,43 @@ function setupNavigation() {
             if (page === 'upload') openUploadModal();
             else if (page === 'profile') showProfile();
             else if (page === 'home') loadFeed();
-            else if (page === 'friends') showToast('✨ قريباً ✨');
-            else if (page === 'inbox') showToast('📬 قريباً');
+            else if (page === 'friends') showToast('✨ قريباً: عالم الأصدقاء ✨');
+            else if (page === 'inbox') showToast('📬 صندوق الوارد سيظهر قريباً');
         });
     });
 }
 
 async function showProfile() {
-    alert(`👑 ${currentUser.username}\n🏆 ${currentUser.level}\n⭐ ${currentUser.points} ${t('points')}`);
+    alert(`👑 ${currentUser.username}\n🏆 ${currentUser.level}\n⭐ ${currentUser.points} نقطة`);
 }
 
+// ========== أزرار إضافية ==========
 function addExtraButtons() {
     const redeemBtn = document.createElement('button');
     redeemBtn.id = 'redeemBtn';
-    redeemBtn.innerText = t('redeem');
+    redeemBtn.innerText = '💎 حول نقاطك إلى Pi 💎';
     redeemBtn.onclick = redeemPoints;
     document.body.appendChild(redeemBtn);
+
     const adManual = document.createElement('button');
     adManual.id = 'adManualBtn';
-    adManual.innerText = t('watch_ad');
+    adManual.innerText = '📺 شاهد إعلان +5';
     adManual.onclick = () => showAd();
     document.body.appendChild(adManual);
 }
 
+// ========== بدء التطبيق ==========
 window.onload = async () => {
     document.getElementById('main-content').style.display = 'flex';
     document.getElementById('splash').style.display = 'none';
+    
     if (!token) await loginWithPi();
     else await loadFeed();
+    
     setupNavigation();
     document.querySelector('.close')?.addEventListener('click', closeUploadModal);
     document.getElementById('publish-video')?.addEventListener('click', publishVideo);
     document.getElementById('upload-area')?.addEventListener('click', () => document.getElementById('video-upload').click());
+    
     addExtraButtons();
-    const langSelect = document.getElementById('langSelect');
-    if (langSelect) {
-        langSelect.value = currentLang;
-        langSelect.addEventListener('change', (e) => {
-            setLanguage(e.target.value);
-            document.getElementById('redeemBtn') && (document.getElementById('redeemBtn').innerText = t('redeem'));
-            document.getElementById('adManualBtn') && (document.getElementById('adManualBtn').innerText = t('watch_ad'));
-            loadFeed();
-        });
-    }
 };
